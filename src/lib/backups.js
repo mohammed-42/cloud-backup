@@ -9,7 +9,6 @@ function friendly(error, fallback) {
   return msg || fallback;
 }
 
-/** All of the signed-in user's backups, newest first, with their ready versions. */
 export async function listBackups() {
   const { data, error } = await supabase
     .from('backups')

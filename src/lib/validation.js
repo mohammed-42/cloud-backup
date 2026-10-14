@@ -1,4 +1,4 @@
-// Pure helpers (no Supabase import) so they can be unit-tested with plain Node.
+
 export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB, same as the bucket limit
 
 export const ALLOWED_MIME = [
@@ -12,7 +12,7 @@ export const ALLOWED_MIME = [
   'application/vnd.openxmlformats-officedocument.presentationml.presentation',
 ];
 
-// Some browsers report an empty type for certain extensions (e.g. .md, .csv).
+
 const EXT_MIME = {
   txt: 'text/plain', csv: 'text/csv', md: 'text/markdown', json: 'application/json',
   pdf: 'application/pdf', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg',
@@ -33,7 +33,7 @@ export function resolveMime(file) {
   return EXT_MIME[getExtension(file.name)] || '';
 }
 
-/** Returns an error message string, or null when the file is acceptable. */
+
 export function validateFile(file) {
   if (!file) return 'No file selected.';
   const name = (file.name || '').trim();
@@ -49,7 +49,7 @@ export function validateFile(file) {
   return null;
 }
 
-/** "report.txt" + 2 -> "report_v2.txt" (used for downloads of specific versions) */
+
 export function versionedFilename(filename, versionNumber) {
   const i = filename.lastIndexOf('.');
   if (i <= 0) return `${filename}_v${versionNumber}`;

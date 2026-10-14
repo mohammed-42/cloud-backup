@@ -30,11 +30,7 @@ create table if not exists public.backup_versions (
 create index if not exists idx_backups_owner on public.backups (owner_id, updated_at desc);
 create index if not exists idx_versions_backup on public.backup_versions (backup_id, version_number desc);
 create index if not exists idx_versions_owner on public.backup_versions (owner_id);
-
--- ---------- 2. Row Level Security -----------------------------------
--- Users may only READ their own rows. All writes go through the
--- SECURITY DEFINER functions below, which use auth.uid() (never a
--- user id sent by the browser).
+2. Row Level Security 
 alter table public.backups enable row level security;
 alter table public.backup_versions enable row level security;
 
@@ -52,10 +48,6 @@ grant select on table public.backups to authenticated;
 grant select on table public.backup_versions to authenticated;
 
 -- ---------- 3. Functions (transactional writes) ----------------------
-
--- Reserve a new version. Creates the backup row too when p_backup_id is null.
--- The version number is calculated here, inside a row lock, so two uploads
--- can never get the same number.
 create or replace function public.start_upload(
   p_backup_id uuid, p_filename text, p_size bigint, p_mime text
 ) returns jsonb
@@ -192,7 +184,7 @@ grant execute on function public.restore_version(uuid, integer) to authenticated
 grant execute on function public.delete_backup(uuid) to authenticated;
 
 -- ---------- 4. Private Storage bucket --------------------------------
--- Limits are enforced by Supabase itself, not only by the React code.
+
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
   'backups', 'backups', false, 10485760,
@@ -238,4 +230,4 @@ create policy "backups_delete_own" on storage.objects
   for delete to authenticated
   using (bucket_id = 'backups' and (storage.foldername(name))[1] = (select auth.uid())::text);
 
--- No UPDATE policy on purpose: stored versions can never be overwritten.
+
